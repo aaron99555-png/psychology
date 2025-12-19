@@ -1,0 +1,597 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飆股菁英班 股市心理學大會考</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'trading-bg': '#0f172a', // Slate 900
+                        'trading-card': '#1e293b', // Slate 800
+                        'trading-accent': '#0ea5e9', // Sky 500
+                        'trading-up': '#10b981', // Emerald 500
+                        'trading-down': '#ef4444', // Red 500
+                        'trading-text': '#e2e8f0', // Slate 200
+                        'trading-muted': '#94a3b8', // Slate 400
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+
+        .option-radio:checked + div {
+            border-color: #0ea5e9;
+            background-color: rgba(14, 165, 233, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <nav class="bg-trading-card border-b border-gray-700 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-chart-line text-trading-accent text-2xl"></i>
+                    <span class="font-bold text-xl tracking-wide text-white">飆股菁英班 <span class="text-trading-accent">股市心理學</span></span>
+                </div>
+                <div class="flex items-center gap-4 text-sm font-medium">
+                    <span class="text-trading-muted hidden sm:block">隨機抽考 20 題</span>
+                    <div class="bg-gray-800 px-3 py-1 rounded-full border border-gray-600">
+                        <i class="fa-regular fa-clock mr-2 text-trading-accent"></i>
+                        <span id="timer">00:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        
+        <!-- Intro Card -->
+        <div id="intro-card" class="bg-trading-card rounded-xl p-8 shadow-2xl border border-gray-700 mb-8 text-center fade-in">
+            <h1 class="text-3xl font-bold text-white mb-4">你是理性的投資人嗎？</h1>
+            <p class="text-trading-muted mb-6 text-lg">
+                本題庫共 <b>100 道</b> 題目，涵蓋處置效應、確認偏誤、羊群效應、過度自信等核心概念。<br>
+                每次測驗將<b>隨機抽出 20 題</b>，測試你的大腦在面對市場波動時，是否能保持冷靜。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left">
+                <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                    <i class="fa-solid fa-brain text-purple-400 mb-2 text-xl"></i>
+                    <h3 class="font-bold text-white">行為金融學</h3>
+                    <p class="text-sm text-gray-400">了解認知偏差如何影響決策。</p>
+                </div>
+                <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                    <i class="fa-solid fa-scale-balanced text-trading-accent mb-2 text-xl"></i>
+                    <h3 class="font-bold text-white">風險控管</h3>
+                    <p class="text-sm text-gray-400">測試你對風險與報酬的心理反應。</p>
+                </div>
+                <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                    <i class="fa-solid fa-users text-trading-up mb-2 text-xl"></i>
+                    <h3 class="font-bold text-white">市場情緒</h3>
+                    <p class="text-sm text-gray-400">判斷你是跟風者還是逆勢交易者。</p>
+                </div>
+            </div>
+            <button onclick="startQuiz()" class="bg-trading-accent hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg shadow-sky-900/50">
+                開始隨機測驗 (20題)
+            </button>
+        </div>
+
+        <!-- Quiz Container (Hidden initially) -->
+        <div id="quiz-container" class="hidden">
+            <!-- Progress Bar -->
+            <div class="mb-6 bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                <div id="progress-bar" class="bg-trading-accent h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div id="question-area" class="space-y-6">
+                <!-- Questions will be injected here via JS -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="mt-8 flex justify-between">
+                <button id="prev-btn" onclick="prevPage()" class="hidden px-6 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-800 transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> 上一頁
+                </button>
+                <button id="next-btn" onclick="nextPage()" class="ml-auto bg-white text-trading-bg font-bold px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors shadow-lg">
+                    下一頁 <i class="fa-solid fa-arrow-right ml-2"></i>
+                </button>
+                <button id="submit-btn" onclick="submitQuiz()" class="hidden ml-auto bg-trading-up text-white font-bold px-8 py-2 rounded-lg hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-900/50">
+                    提交試卷 <i class="fa-solid fa-check ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Container (Hidden initially) -->
+        <div id="results-container" class="hidden fade-in">
+            <div class="bg-trading-card rounded-xl p-8 border border-gray-700 shadow-2xl text-center">
+                <div class="mb-6">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-gray-800 border-4 border-trading-accent mb-4">
+                        <span id="score-display" class="text-3xl font-bold text-white">0</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">測驗結果</h2>
+                    <p id="score-comment" class="text-trading-muted mt-2">分析中...</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-8">
+                    <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="text-trading-up font-bold mb-2">優勢領域</h4>
+                        <p id="strength-text" class="text-sm text-gray-300">...</p>
+                    </div>
+                    <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="text-trading-down font-bold mb-2">待加強心態</h4>
+                        <p id="weakness-text" class="text-sm text-gray-300">...</p>
+                    </div>
+                </div>
+
+                <div class="text-left border-t border-gray-700 pt-6">
+                    <h3 class="text-xl font-bold text-white mb-4">詳細解析</h3>
+                    <div id="detailed-review" class="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+                        <!-- Review items injected here -->
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button onclick="location.reload()" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+                        重新測驗 (再抽20題)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-trading-card border-t border-gray-700 py-6 mt-8">
+        <div class="container mx-auto px-4 text-center text-trading-muted text-sm">
+            <p>&copy; 2025 飆股菁英班 股市心理學. Designed for Traders.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Full Question Pool - 100 Questions
+        const fullQuestionPool = [
+            // Original 50
+            {
+                category: "處置效應",
+                question: "當你持有的股票下跌 20% 時，大多數心理素質較差的投資者傾向於？",
+                options: ["立即停損", "加碼攤平並死抱", "冷靜分析基本面", "完全忘記這檔股票"],
+                answer: 1,
+                explanation: "處置效應指出，投資者傾向於過早賣出獲利股票（落袋為安），而過長時間持有虧損股票（不願承認損失）。"
+            },
+            {
+                category: "確認偏誤",
+                question: "當你看好某檔股票時，你更傾向於閱讀哪類新聞？",
+                options: ["客觀的財報分析", "看空的警示文章", "支持你看法的利多新聞", "隨機閱讀"],
+                answer: 2,
+                explanation: "確認偏誤是指人們傾向於尋找、解釋和記憶能證實自己既有信念的資訊，而忽略反面證據。"
+            },
+            {
+                category: "損失規避",
+                question: "心理學研究顯示，虧損 100 元的痛苦感，大約等同於獲利多少元的快樂感？",
+                options: ["100 元", "150 元", "200 元至 250 元", "500 元"],
+                answer: 2,
+                explanation: "根據康納曼的前景理論，損失帶來的痛苦約是同等獲利帶來快樂的 2 到 2.5 倍。"
+            },
+            {
+                category: "羊群效應",
+                question: "當市場出現極度恐慌性下殺時，跟隨群眾拋售股票的行為被稱為？",
+                options: ["價值投資", "羊群效應", "隨機漫步", "效率市場"],
+                answer: 1,
+                explanation: "羊群效應指投資者放棄自己的獨立判斷，盲目跟隨市場大眾的行為。"
+            },
+            {
+                category: "過度自信",
+                question: "頻繁交易（High Frequency of Trading）的散戶通常具有什麼心理特徵？",
+                options: ["風險趨避", "過度自信", "資訊落後", "資金不足"],
+                answer: 1,
+                explanation: "研究顯示，過度自信的投資者認為自己能準確預測市場，導致頻繁交易，最終績效往往低於大盤。"
+            },
+            {
+                category: "錨定效應",
+                question: "你買入股票的成本價是 100 元，現在跌到 80 元，你堅持要等回到 100 元才賣，這是什麼心理？",
+                options: ["錨定效應", "羊群效應", "近期偏誤", "後見之明"],
+                answer: 0,
+                explanation: "錨定效應指決策時過度依賴「第一筆資訊」（如買入成本），而忽略了資產當下的真實價值。"
+            },
+            {
+                category: "賭徒謬誤",
+                question: "「這檔股票已經連跌 5 天了，明天一定會漲！」這種想法屬於？",
+                options: ["技術分析", "均值回歸", "賭徒謬誤", "動能交易"],
+                answer: 2,
+                explanation: "賭徒謬誤誤以為獨立的隨機事件會互相影響，但市場短期走勢往往具獨立性。"
+            },
+            {
+                category: "後見之明",
+                question: "當股市大跌後，許多人說「我早就知道會崩盤」，這種心理是？",
+                options: ["先知", "後見之明偏誤", "歸因偏誤", "代表性捷思"],
+                answer: 1,
+                explanation: "後見之明偏誤是指在事情發生後，誤以為自己事前就能預測到結果，高估了自己的預測能力。"
+            },
+            {
+                category: "心理帳戶",
+                question: "對於「辛苦工作賺來的錢」和「股票意外賺到的錢」，人們通常會？",
+                options: ["一視同仁", "更珍惜股票賺的錢", "更隨意花費股票賺的錢", "全部存起來"],
+                answer: 2,
+                explanation: "心理帳戶理論指出，人們會將錢分門別類，對「意外之財」（House Money）往往花得更大方。"
+            },
+            {
+                category: "近期偏誤",
+                question: "因為最近科技股大漲，投資人就認為未來科技股會一直漲，這是？",
+                options: ["近期偏誤", "基本面分析", "長期投資", "逆向思考"],
+                answer: 0,
+                explanation: "近期偏誤指人們過度重視最近發生的事件或資訊，而忽略了長期的歷史數據。"
+            },
+            { category: "稟賦效應", question: "一旦你買入了某檔股票，你往往會覺得它比你買入前更有價值，這是？", options: ["稟賦效應", "沉沒成本", "機會成本", "稀缺效應"], answer: 0, explanation: "稟賦效應指人們一旦擁有某項物品，對該物品價值的評估就會高於未擁有時。" },
+            { category: "沉沒成本", question: "「我已經在這檔虧損的股票上花了一年時間研究，不能現在放棄。」這展現了？", options: ["堅持到底", "沉沒成本謬誤", "價值發現", "長期佈局"], answer: 1, explanation: "沉沒成本是指已經發生且無法回收的成本。理性決策應基於未來展望，而非過去已投入的資源。" },
+            { category: "FOMO", question: "看到朋友都在買航運股賺錢，你也忍不住在最高點衝進去，這是受到什麼驅使？", options: ["基本面好轉", "FOMO", "技術面突破", "內線消息"], answer: 1, explanation: "Fear of Missing Out (FOMO) 是指擔心錯過獲利機會而產生的焦慮，常導致追高殺低。" },
+            { category: "代表性捷思", question: "看到一家公司名字有「生物科技」，就直接認定它是高成長股，這是？", options: ["深入研究", "代表性捷思", "邏輯演繹", "基本面篩選"], answer: 1, explanation: "代表性捷思指人們根據事物的表面特徵（如名稱）來判斷其類別或價值，常導致刻板印象。" },
+            { category: "歸因偏誤", question: "賺錢時覺得是自己「選股厲害」，賠錢時怪「大環境不好/主力作弊」，這是？", options: ["自利歸因偏差", "謙虛", "客觀分析", "隨機致富"], answer: 0, explanation: "自利歸因偏差指將成功歸因於內在因素，將失敗歸因於外在因素。" },
+            { category: "現狀偏誤", question: "明知道現在的投資組合績效不佳，卻懶得去調整改變，傾向維持現狀，這是？", options: ["耐心", "現狀偏誤", "波段操作", "擇時交易"], answer: 1, explanation: "現狀偏誤指人們傾向於不做改變，維持目前的狀況，即使改變可能帶來更好的結果。" },
+            { category: "本土偏好", question: "台灣投資人資產配置中有 90% 都是台股，較少配置美股或全球股市，這稱為？", options: ["愛國心", "本土偏好", "匯率風險", "分散投資"], answer: 1, explanation: "本土偏好指投資人傾向投資自己熟悉的本國市場，導致投資組合缺乏國際分散。" },
+            { category: "資訊過載", question: "每天看 50 個財經頻道和新聞，反而導致無法做出交易決策，這叫？", options: ["精明研究", "分析癱瘓", "勤奮", "全面佈局"], answer: 1, explanation: "資訊過載會導致分析癱瘓，過多的雜訊反而干擾了核心的判斷邏輯。" },
+            { category: "控制幻覺", question: "盯盤看著 K 線圖跳動，會讓你覺得自己更能掌握股價走勢，這其實是？", options: ["盤感", "控制幻覺", "技術分析", "專注力"], answer: 1, explanation: "控制幻覺指人們相信自己能控制或影響隨機事件的結果。" },
+            { category: "懊悔趨避", question: "不敢買進已經大漲的股票，是因為害怕買了之後下跌會後悔；也不敢賣出虧損股，怕賣了之後反彈，這是？", options: ["謹慎", "懊悔趨避", "價值投資", "長期持有"], answer: 1, explanation: "懊悔趨避指為了避免未來可能產生的後悔情緒，而選擇不作為或拖延決策。" },
+            { category: "情緒", question: "交易中最危險的兩種極端情緒通常是？", options: ["興奮與平靜", "恐懼與貪婪", "希望與絕望", "快樂與悲傷"], answer: 1, explanation: "華爾街名言：市場由恐懼與貪婪驅動。" },
+            { category: "風險管理", question: "為了對抗心理偏差，專業交易員通常會設定什麼？", options: ["獲利目標", "停損點與交易計畫", "祈禱儀式", "新聞鬧鐘"], answer: 1, explanation: "嚴格執行停損與交易計畫是克服情緒波動的最佳工具。" },
+            { category: "結果偏誤", question: "因為一次高風險的賭博式交易賺了錢，就認為這個策略是正確的，這屬於？", options: ["結果偏誤", "成功學", "倖存者偏差", "實力展現"], answer: 0, explanation: "結果偏誤指僅根據結果來評價決策的好壞，而忽略了決策過程是否合理。" },
+            { category: "倖存者偏差", question: "只看到巴菲特等成功投資者的案例，卻忽略了無數失敗的投資者，這是？", options: ["學習典範", "倖存者偏差", "正面思考", "目標設定"], answer: 1, explanation: "倖存者偏差指過度關注「存活下來」的人事物，忽略了無法發聲的失敗案例。" },
+            { category: "社會認同", question: "當論壇上每個人都在喊「這檔股票上看 1000」，你會覺得這更有可能是真的，因為？", options: ["社會認同原理", "群眾智慧", "內線消息", "基本面轉佳"], answer: 0, explanation: "社會認同原理指人們在不確定時，傾向參考他人的行為來決定自己的行動。" },
+            { category: "熟悉度偏誤", question: "只買自己公司或朋友公司的股票，因為「感覺比較了解」，這是？", options: ["內線交易", "熟悉度偏誤", "價值投資", "核心持股"], answer: 1, explanation: "熟悉度偏誤導致投資過度集中在熟悉的少數標的，忽略了分散風險。" },
+            { category: "雙曲貼現", question: "寧願今天拿 100 元，也不願下個月拿 110 元（年化報酬極高），顯示人們傾向？", options: ["延遲享樂", "立即滿足", "理性計算", "長期規劃"], answer: 1, explanation: "雙曲貼現指人們對眼前利益的評價遠高於未來利益，導致短視近利。" },
+            { category: "規劃謬誤", question: "低估了達成獲利目標所需的時間和風險，高估了自己的執行力，這是？", options: ["規劃謬誤", "樂觀鎖定", "執行力強", "願景設定"], answer: 0, explanation: "規劃謬誤指人們在預測未來任務時，傾向於過度樂觀。" },
+            { category: "熱手謬誤", question: "認為某位分析師連續預測準確三次，第四次也一定準，這是？", options: ["專業信任", "熱手謬誤", "權威效應", "貝氏定理"], answer: 1, explanation: "熱手謬誤源自籃球，誤以為連續成功代表「手氣熱」，忽略了機率回歸。" },
+            { category: "自我控制", question: "為了防止自己亂下單，將交易軟體刪除或設定額度限制，這是在對抗？", options: ["手續費", "自我控制問題", "網路延遲", "駭客入侵"], answer: 1, explanation: "預先承諾機制（Pre-commitment）是解決自我控制力不足的有效方法。" },
+            { category: "認知失調", question: "當市場走勢與你的判斷相反時，你感到極度不適並試圖找理由解釋，這是？", options: ["認知失調", "情緒崩潰", "市場錯誤", "邏輯辯證"], answer: 0, explanation: "認知失調指當信念與事實衝突時產生的心理不適，人會傾向扭曲事實來緩解不適。" },
+            { category: "貨幣幻覺", question: "因為薪水漲了 5%，但通膨也是 5%，你卻覺得自己變有錢了，這是？", options: ["實質購買力", "貨幣幻覺", "經濟成長", "財富效應"], answer: 1, explanation: "貨幣幻覺指人們傾向專注於名目價值（金額數字），而忽略實質價值（購買力）。" },
+            { category: "不確定性趨避", question: "相比於機率模糊的投資機會，人們更喜歡機率明確的賭局，即使前者期望值較高，這是？", options: ["模糊性趨避", "風險愛好", "計算精確", "直覺反應"], answer: 0, explanation: "人討厭「未知」，寧願面對已知的風險（Risk），也不願面對未知的模糊（Ambiguity）。" },
+            { category: "框架效應", question: "「有 90% 的機率存活」與「有 10% 的機率死亡」，雖然意思一樣，但人們對前者的接受度較高，這是？", options: ["語言藝術", "框架效應", "數學邏輯", "樂觀偏誤"], answer: 1, explanation: "框架效應指同一資訊以不同方式呈現（框架），會導致不同的決策結果。" },
+            { category: "情緒標籤", question: "因為曾經在一檔股票上賠大錢，之後看到該股票代碼就感到厭惡，這是？", options: ["情緒標籤", "創傷後壓力", "記取教訓", "理性迴避"], answer: 0, explanation: "情感捷思指人們依賴當下的情緒感受（喜歡/討厭）來快速做決定，而非分析利弊。" },
+            { category: "權威偏誤", question: "盲目聽信「財經名嘴」或「老師」的明牌，而不自己做功課，這是？", options: ["尊師重道", "權威偏誤", "借力使力", "資訊付費"], answer: 1, explanation: "過度服從權威人物的意見，放棄獨立思考。" },
+            { category: "選擇性知覺", question: "你只注意到圖表中符合你預期的技術指標訊號，忽略了其他背離訊號，這是？", options: ["專注力", "選擇性知覺", "過濾雜訊", "專業判斷"], answer: 1, explanation: "選擇性知覺指過濾掉與自己期望不符的刺激。" },
+            { category: "樂觀偏誤", question: "大部分散戶進入股市都認為自己能打敗大盤，屬於前 20% 的贏家，這是？", options: ["自信", "樂觀偏誤", "夢想", "統計盲點"], answer: 1, explanation: "樂觀偏誤使人高估好事發生在自己身上的機率，低估壞事發生的機率。" },
+            { category: "變動獎賞", question: "為什麼看盤和刷社群媒體一樣容易上癮？因為市場提供的是？", options: ["固定薪資", "間歇性變動獎賞", "無償服務", "穩定回報"], answer: 1, explanation: "行為心理學中，間歇性的、不可預測的獎賞（如偶爾漲停）最容易讓人上癮。" },
+            { category: "復仇式交易", question: "剛停損了一筆大單，想立刻反手做單「把錢贏回來」，這稱為？", options: ["靈活操作", "復仇式交易", "對沖策略", "加倍下注"], answer: 1, explanation: "復仇式交易由憤怒驅動，通常缺乏理性分析，是大賠的主因之一。" },
+            { category: "預測偏好", question: "人類天生喜歡聽「預測」（例如年底上看萬八），而不喜歡聽「應對策略」，因為預測能提供？", options: ["確定性的安全感", "操作績效", "真實資訊", "獲利保證"], answer: 0, explanation: "預測能緩解對未來不確定性的焦慮，即使預測往往不準。" },
+            { category: "基本比率謬誤", question: "聽到一個生動的當沖致富故事，就忽略了當沖客 90% 賠錢的統計事實，這是？", options: ["基本比率謬誤", "故事行銷", "激勵人心", "特例分析"], answer: 0, explanation: "忽略了母群體的統計基率（Base Rate），而被個別具體資訊誤導。" },
+            { category: "峰終定律", question: "你對一段交易經歷的評價，往往取決於？", options: ["平均獲利", "峰值體驗與結尾體驗", "總交易時長", "起始資金"], answer: 1, explanation: "峰終定律（Peak-End Rule）指記憶主要受最強烈體驗（峰）和最後體驗（終）影響。" },
+            { category: "知識的詛咒", question: "資深交易員很難理解新手為什麼會犯低級錯誤，這是？", options: ["傲慢", "知識的詛咒", "代溝", "缺乏同理心"], answer: 1, explanation: "一旦擁有了某種知識，就很難想像缺乏這種知識時的情境。" },
+            { category: "後悔理論", question: "寧可買大家都買的績優股賠錢，也不敢買冷門股賠錢，因為前者比較？", options: ["容易原諒自己", "賠得比較少", "流動性好", "有股利"], answer: 0, explanation: "隨大流失敗的心理後悔程度較低（大家都賠），特立獨行失敗的後悔程度較高。" },
+            { category: "享樂適應", question: "剛賺到大錢很開心，但過不久就覺得「沒什麼」，需要賺更多才能滿足，這是？", options: ["貪得無厭", "享樂適應", "通膨影響", "野心"], answer: 1, explanation: "享樂適應指人會迅速適應新的快樂程度，導致幸福感回歸基準線。" },
+            { category: "稀缺效應", question: "「最後上車機會」、「限時申購」等話術利用了什麼心理？", options: ["稀缺效應", "價值投資", "誠信原則", "資訊透明"], answer: 0, explanation: "稀缺效應會造成緊迫感，降低決策品質。" },
+            { category: "稟賦效應II", question: "空手時覺得股價太貴，買入後卻覺得股價被低估，這種價值判斷的改變源於？", options: ["市場波動", "立場決定腦袋 (稟賦效應)", "基本面變化", "技術面修正"], answer: 1, explanation: "持有部位會改變我們對資產價值的看法。" },
+            { category: "自我歸因", question: "長期贏家通常具有哪種思維模式？", options: ["都是市場的錯", "對結果負全責", "聽信明牌", "依賴運氣"], answer: 1, explanation: "極致的自我負責（Radical Responsibility）是頂尖交易員的特質。" },
+            { category: "總結", question: "戰勝股市心理學的關鍵在於？", options: ["消滅所有情緒", "察覺並管理情緒", "智商高低", "資金多寡"], answer: 1, explanation: "情緒無法被消滅，關鍵在於「察覺」並建立規則來「管理」它。" },
+            // New 50
+            { category: "情緒", question: "當你連續獲利三筆交易後，這時候你最該警惕的心理狀態是？", options: ["過度自信 (God Complex)", "恐懼", "悲觀", "冷靜"], answer: 0, explanation: "連續獲利容易讓人產生「我是股神」的錯覺，進而放大槓桿導致慘賠。" },
+            { category: "錨定效應", question: "「歷史高點是 1000 元，現在才 500 元，好便宜！」這犯了什麼錯？", options: ["錨定歷史高價", "基本面分析", "價值投資", "逆向思考"], answer: 0, explanation: "過去的價格不代表現在的價值，錨定高點會讓人忽視公司可能已變質的事實。" },
+            { category: "敘事謬誤", question: "比起枯燥的財報數據，人們更容易相信「公司接到神秘大單」的故事，這是？", options: ["敘事謬誤", "基本面分析", "內線交易", "數據分析"], answer: 0, explanation: "人類天生喜歡聽故事，往往會因為故事太動聽而忽略了客觀事實的邏輯漏洞。" },
+            { category: "處置效應", question: "賣掉賺錢的台積電，去加碼賠錢的宏達電，這種「汰強留弱」的行為是？", options: ["波段操作", "處置效應", "平衡佈局", "風險對沖"], answer: 1, explanation: "處置效應導致投資人傾向賣出贏家股票，死抱輸家股票。" },
+            { category: "本土偏好", question: "只敢買自己家附近的銀行股，不敢買華爾街的銀行股，主要是因為？", options: ["熟悉度偏誤", "匯率風險", "愛用國貨", "手續費"], answer: 0, explanation: "熟悉度偏誤讓我們誤以為「聽過」就等於「安全」或「了解」。" },
+            { category: "羊群效應", question: "當擦鞋童都在談論股票時，通常是市場的什麼階段？", options: ["初升段", "主升段", "泡沫末端", "打底期"], answer: 2, explanation: "當平時不關注股市的人都瘋狂湧入，往往意味著羊群效應達到極致，泡沫即將破裂。" },
+            { category: "過度反應", question: "公司發布一個小利空，股價卻暴跌 10%，之後幾天又漲回來，這顯示市場？", options: ["效率市場", "過度反應", "內線交易", "流動性不足"], answer: 1, explanation: "投資人往往對突發新聞反應過度（Overreaction），導致股價偏離基本面。" },
+            { category: "機率忽視", question: "樂透彩券期望值是負的，但大家還是搶著買，因為人們？", options: ["忽視極低機率", "數學不好", "做公益", "太有錢"], answer: 0, explanation: "人們傾向高估極小機率事件（如中頭獎）發生的可能性。" },
+            { category: "禀賦效應", question: "你持有的股票，你會要求比市價更高的價格才肯賣，這稱為？", options: ["惜售心理 (禀賦效應)", "貪婪", "耐心", "價值發現"], answer: 0, explanation: "我們會高估自己擁有東西的價值，導致買賣雙方價格認知有落差。" },
+            { category: "後見之明", question: "看到線圖走出 W 底才說「這裡就是買點啊」，這是？", options: ["馬後炮 (後見之明)", "技術大師", "前瞻分析", "時光旅行"], answer: 0, explanation: "事後諸葛容易讓人誤以為交易很簡單，實戰中當下是很難判斷的。" },
+            { category: "確認偏誤", question: "加入「多軍取暖群組」最大的風險是？", options: ["被詐騙", "強化確認偏誤", "收費太貴", "訊息延遲"], answer: 1, explanation: "同溫層會不斷強化你原本的觀點，讓你對危險訊號視而不見。" },
+            { category: "心理帳戶", question: "把股利當作「零用錢」花掉，而不是再投入複利，這是因為？", options: ["心理帳戶分類不同", "現金流需求", "犒賞自己", "稅務考量"], answer: 0, explanation: "將資本利得與股利視為不同帳戶，導致消費行為不同，影響長期複利效果。" },
+            { category: "損失規避", question: "為了避免實現虧損，許多人會選擇「不賣就不算賠」，這其實是？", options: ["鴕鳥心態", "長期投資", "價值存股", "佛系操盤"], answer: 0, explanation: "這是一種逃避心理，帳面虧損也是實質資產的減損，死抱可能導致歸零。" },
+            { category: "自我歸因", question: "當沖賺了便當錢就貼對帳單炫耀，賠了錢就默不作聲，這是？", options: ["選擇性揭露", "謙虛", "低調", "隱私保護"], answer: 0, explanation: "這種行為強化了自我感覺良好的偏誤，讓人無法正視整體績效。" },
+            { category: "賭徒謬誤", question: "連續 10 根紅 K 棒，許多人會想去放空，覺得「漲太多該跌了」，這是？", options: ["均值回歸誤用 (賭徒謬誤)", "技術分析", "居高思危", "乖離率過大"], answer: 0, explanation: "強勢趨勢中，漲多不代表一定會跌，逆勢摸頭往往是重傷的開始。" },
+            { category: "社會比較", question: "看到別人在股市賺大錢，自己沒賺到會感到痛苦，這是？", options: ["相對剝奪感", "嫉妒", "競爭心", "以上皆是"], answer: 3, explanation: "社會比較產生的相對剝奪感是驅使散戶追高殺低的主因之一。" },
+            { category: "現狀偏誤", question: "定期定額扣款雖然績效不好，但懶得去更改標的，這是？", options: ["紀律", "現狀偏誤 (惰性)", "長期抗戰", "手續費考量"], answer: 1, explanation: "惰性讓我們傾向維持原樣，即使改變對我們有利。" },
+            { category: "可得性捷思", question: "因為最近常發生空難新聞，就覺得搭飛機很危險而改搭火車，這是？", options: ["可得性捷思", "風險評估", "直覺", "統計分析"], answer: 0, explanation: "人們會根據記憶中容易提取的資訊（通常是聳動新聞）來評估事件發生的機率。" },
+            { category: "情緒", question: "「行情總在絕望中誕生，在半信半疑中成長」，這句話描述的是？", options: ["市場心理循環", "基本面", "技術面", "籌碼面"], answer: 0, explanation: "市場情緒往往是反向指標，極度絕望時通常是底部。" },
+            { category: "控制幻覺", question: "用力按滑鼠下單，覺得這樣下單比較會賺錢，這是？", options: ["儀式感 (控制幻覺)", "迷信", "發洩", "手速快"], answer: 0, explanation: "類似丟骰子前吹氣，以為自己能影響隨機結果。" },
+            { category: "框架效應", question: "手續費「打 3 折」和「收 30%」，其實一樣，但前者聽起來比較吸引人，這是？", options: ["框架效應", "行銷話術", "數學陷阱", "價格歧視"], answer: 0, explanation: "描述方式（框架）改變，會影響人的感受與決策。" },
+            { category: "處置效應", question: "獲利 5% 就急著跑，虧損 50% 還在凹單，長期下來會導致？", options: ["大賺小賠", "小賺大賠", "損益兩平", "穩定獲利"], answer: 1, explanation: "截斷獲利、讓虧損奔跑，期望值為負，是散戶破產主因。" },
+            { category: "錨定效應", question: "分析師說目標價 200，你就一直等到 200 才肯賣，結果跌回 100，這是被什麼影響？", options: ["目標價錨定", "專業信任", "長線佈局", "基本面改變"], answer: 0, explanation: "過度依賴外部給出的數字作為錨點，忽略了市場動態變化。" },
+            { category: "樂觀偏誤", question: "借錢買股票（開槓桿），認為自己一定能在利息到期前大賺，這是？", options: ["過度樂觀", "自信", "精算", "套利"], answer: 0, explanation: "低估風險、高估獲利能力，槓桿是雙面刃，通常會放大樂觀偏誤的後果。" },
+            { category: "後悔理論", question: "賣飛了（賣出後大漲）比套牢（買進後下跌）更讓人痛苦，因為？", options: ["作為的後悔 vs 不作為的後悔", "金錢損失", "面子問題", "沒賺到等於賠"], answer: 0, explanation: "「不作為」導致的錯誤通常比「作為」導致的錯誤容易被原諒，但在股市中賣飛屬於「錯誤決策導致的踏空」，心理衝擊大。" },
+            { category: "羊群效應", question: "每當股市名嘴喊盤，隔天散戶就一窩蜂衝進去，主力趁機倒貨，這叫？", options: ["割韭菜", "共襄盛舉", "價值投資", "技術突破"], answer: 0, explanation: "利用羊群效應，主力在高檔將籌碼倒給盲目跟風的散戶。" },
+            { category: "近期偏誤", question: "過去三年多頭市場賺錢，就認為未來三年也會一樣好做，這是？", options: ["線性思考 (近期偏誤)", "週期理論", "趨勢分析", "歷史重演"], answer: 0, explanation: "將短期近期經驗過度推論到未來。" },
+            { category: "沉沒成本", question: "繳了昂貴的投顧會費，即使老師報的牌一直賠，還是捨不得退費，這是？", options: ["沉沒成本謬誤", "尊師重道", "契約精神", "期待回本"], answer: 0, explanation: "因為已經付錢（沉沒成本），而強迫自己繼續消費錯誤的服務。" },
+            { category: "確認偏誤", question: "當你持有空單時，看到利多新聞你會？", options: ["認為是主力騙線出貨", "客觀評估", "立即停損", "反手做多"], answer: 0, explanation: "會自動將不利資訊解讀為有利於自己立場的解釋（利多不漲、誘多）。" },
+            { category: "歸因偏誤", question: "牛市時人人都是股神，大家都覺得自己選股能力強，這是？", options: ["市場紅利歸因於個人能力", "實力展現", "選股有方", "運氣好"], answer: 0, explanation: "錯把「β（市場報酬）」當成「α（超額報酬）」，高估自己能力。" },
+            { category: "心理帳戶", question: "有些人在賭場贏錢後會去吃大餐，輸錢則會省吃儉用，但在股市賺賠卻沒感覺，因為？", options: ["股市錢是虛擬的數字", "賭場是現金", "心理帳戶感受度不同", "以上皆是"], answer: 3, explanation: "未實現損益對許多人來說只是螢幕上的數字，真實感較低。" },
+            { category: "損失規避", question: "寧願冒著虧損 50% 的風險去拚回本，也不願接受虧損 10% 的事實，這是？", options: ["風險愛好 (在虧損區域)", "風險趨避", "理性計算", "勇氣"], answer: 0, explanation: "前景理論指出，人在面對虧損時會變成「風險愛好者」，傾向賭一把來翻本。" },
+            { category: "代表性捷思", question: "看到線型像「W 底」，就認定一定會漲，忽略了成交量配合，這是？", options: ["圖形陷阱 (代表性捷思)", "技術精通", "形態學", "量價分析"], answer: 0, explanation: "只看表象特徵相似就下定論，忽略了細節差異。" },
+            { category: "知識的詛咒", question: "分析師寫的報告充滿專業術語，散戶看不懂卻覺得很厲害，這是？", options: ["權威效應", "知識含金量", "專業門檻", "溝通障礙"], answer: 0, explanation: "看不懂反而覺得對方很強，盲目信任權威。" },
+            { category: "自我控制", question: "規定自己每天只能賠 5000 元，但一賠錢就失心瘋加碼，這是缺乏？", options: ["紀律", "資金", "技術", "運氣"], answer: 0, explanation: "知易行難，缺乏情緒控管與紀律執行力。" },
+            { category: "雙曲貼現", question: "想要長期財富自由（長期獎勵），卻忍不住現在就想當沖賺快錢（短期獎勵），這是？", options: ["時間偏好矛盾", "靈活操作", "資金效率", "複利效果"], answer: 0, explanation: "短視近利，犧牲長期大利益換取短期小利益（或快感）。" },
+            { category: "情緒", question: "交易虧損後，為了發洩情緒而亂買一通，這叫？", options: ["情緒性交易 (Tilt)", "分散風險", "轉換心情", "測試市場"], answer: 0, explanation: "像賭徒輸紅了眼，完全失去理智的交易行為。" },
+            { category: "認知失調", question: "明明看錯方向，卻告訴自己「我是做長線投資」，以此安慰自己，這是？", options: ["認知失調 (合理化)", "策略轉型", "價值投資", "彈性調整"], answer: 0, explanation: "為了解決「看錯」與「我是聰明的」之間的衝突，找藉口合理化錯誤。" },
+            { category: "錨定效應", question: "因為過去這檔股票都在 50-60 元區間震盪，所以 50 元就拼命買，結果跌破 40，這是？", options: ["區間錨定", "箱型操作", "支撐確認", "低買高賣"], answer: 0, explanation: "市場結構會改變，過去的區間不代表未來的區間。" },
+            { category: "過度自信", question: "全職交易員的存活率極低，但每個人都覺得自己會是倖存者，這是？", options: ["優越感偏差", "夢想家", "統計學", "生存法則"], answer: 0, explanation: "每個人都覺得自己比平均水準優秀。" },
+            { category: "稀缺效應", question: "「最後一盤！」、「這波不跟就沒了！」，這種心態容易導致？", options: ["追高被套", "買在低點", "精準進場", "錯失良機"], answer: 0, explanation: "急迫感會關閉大腦的理性思考區域。" },
+            { category: "社會認同", question: "在股票社團看到大家都在貼對帳單賺錢，會讓你覺得？", options: ["市場很好賺 (產生錯覺)", "大家都很厲害", "自己很差勁", "以上皆是"], answer: 3, explanation: "社群媒體的過濾效應（只報喜不報憂）會扭曲對市場真實情況的認知。" },
+            { category: "稟賦效應", question: "自己選的股票含淚也要抱著，別人推薦的股票一跌就賣，這是？", options: ["敝帚自珍 (稟賦效應)", "信任度問題", "責任感", "策略不同"], answer: 0, explanation: "對自己投入心血（研究/選擇）的標的賦予過高價值。" },
+            { category: "可得性捷思", question: "看到新聞報導有人當沖違約交割，你會？", options: ["高估違約風險", "低估違約風險", "客觀統計", "無感"], answer: 0, explanation: "近期發生的鮮明案例會讓人高估該事件發生的頻率。" },
+            { category: "結果偏誤", question: "雖然這筆交易完全不符合策略，但最後賺錢了，你會認為？", options: ["運氣好，下次不能這樣", "我真厲害，策略是對的 (結果偏誤)", "市場給面子", "無所謂"], answer: 1, explanation: "危險的誤解，將運氣當實力，下次重倉可能就畢業了。" },
+            { category: "心理帳戶", question: "融資買股票賠錢比較不心痛，因為覺得是「借來的錢」？", options: ["錯，融資賠錢更痛 (槓桿)", "對，別人的錢", "沒感覺", "不知道"], answer: 0, explanation: "理論上應該更痛，但有些人會因為「槓桿」的放大效應而產生賭博心態，直到斷頭才清醒。" },
+            { category: "羊群效應", question: "什麼時候最容易發生「多殺多」？", options: ["羊群恐慌踩踏時", "主力進場時", "利多發布時", "盤整時"], answer: 0, explanation: "大家同時想逃生門（賣出），導致價格崩跌。" },
+            { category: "總結", question: "要在股市長期生存，最重要的不是預測行情，而是？", options: ["認識自己 (心理控制)", "認識主力", "認識內線", "認識老師"], answer: 0, explanation: "技術和基本面都能學，唯有心魔難過。修心是交易的終極聖杯。" },
+            { category: "加碼", question: "虧損時加碼是「攤平」，獲利時加碼是「乘勝追擊」，兩者心理素質差異在於？", options: ["承認錯誤 vs 確認趨勢", "資金多寡", "運氣好壞", "無差別"], answer: 0, explanation: "攤平是不願認錯，獲利加碼是順勢操作。" },
+            { category: "停損", question: "為什麼「設好停損」這麼難執行？", options: ["違反人性 (承認失敗)", "手續費貴", "軟體難用", "怕賣錯"], answer: 0, explanation: "停損等於承認自己看錯，這是對自尊心的打擊。" }
+        ];
+
+        let quizQuestions = []; // Selected 20 questions
+        const QUIZ_SIZE = 20;
+        let currentBatch = 0;
+        const BATCH_SIZE = 5; 
+        let userAnswers = [];
+        let timeElapsed = 0;
+        let timerInterval;
+
+        // --- Functions ---
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeElapsed = 0;
+            document.getElementById('timer').innerText = "00:00";
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                const minutes = Math.floor(timeElapsed / 60).toString().padStart(2, '0');
+                const seconds = (timeElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            // 1. Randomly select 20 questions
+            // Create a shallow copy to shuffle so we don't mess up original order if needed
+            const shuffled = shuffleArray([...fullQuestionPool]);
+            quizQuestions = shuffled.slice(0, QUIZ_SIZE);
+            
+            // 2. Reset State
+            userAnswers = new Array(QUIZ_SIZE).fill(null);
+            currentBatch = 0;
+            
+            // 3. UI Updates
+            document.getElementById('intro-card').classList.add('hidden');
+            document.getElementById('results-container').classList.add('hidden'); // Ensure results are hidden if retrying
+            document.getElementById('quiz-container').classList.remove('hidden');
+            document.getElementById('quiz-container').classList.add('fade-in');
+            
+            startTimer();
+            renderQuestions();
+            updateProgress();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('question-area');
+            container.innerHTML = '';
+
+            const start = currentBatch * BATCH_SIZE;
+            const end = Math.min(start + BATCH_SIZE, quizQuestions.length);
+
+            for (let i = start; i < end; i++) {
+                const q = quizQuestions[i];
+                const qNum = i + 1;
+                const savedAnswer = userAnswers[i];
+
+                let html = `
+                    <div class="bg-trading-card rounded-lg p-6 border border-gray-700 shadow-md fade-in">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-gray-800 text-trading-accent text-xs font-bold px-2 py-1 rounded border border-gray-600">Q${qNum}</span>
+                            <span class="text-trading-muted text-xs font-bold uppercase tracking-wider">${q.category}</span>
+                        </div>
+                        <h3 class="text-lg text-white font-medium mb-4">${q.question}</h3>
+                        <div class="grid grid-cols-1 gap-3">
+                `;
+
+                q.options.forEach((opt, idx) => {
+                    const isChecked = savedAnswer === idx ? 'checked' : '';
+                    html += `
+                        <label class="cursor-pointer relative group">
+                            <input type="radio" name="q${i}" value="${idx}" class="option-radio hidden" onchange="saveAnswer(${i}, ${idx})" ${isChecked}>
+                            <div class="p-3 rounded-md border border-gray-600 bg-gray-800/50 hover:bg-gray-700 hover:border-trading-accent transition-all flex items-center">
+                                <div class="w-4 h-4 rounded-full border border-gray-400 mr-3 flex-shrink-0 group-hover:border-trading-accent radio-indicator"></div>
+                                <span class="text-gray-300 group-hover:text-white">${opt}</span>
+                            </div>
+                        </label>
+                    `;
+                });
+
+                html += `</div></div>`;
+                container.innerHTML += html;
+            }
+
+            // Button visibility
+            document.getElementById('prev-btn').classList.toggle('hidden', currentBatch === 0);
+            
+            const isLastBatch = end === quizQuestions.length;
+            document.getElementById('next-btn').classList.toggle('hidden', isLastBatch);
+            document.getElementById('submit-btn').classList.toggle('hidden', !isLastBatch);
+            
+            // Scroll to top of question area
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function saveAnswer(questionIdx, optionIdx) {
+            userAnswers[questionIdx] = optionIdx;
+            
+            // Visual feedback for selected radio custom style
+            const inputs = document.getElementsByName(`q${questionIdx}`);
+            inputs.forEach(input => {
+                const div = input.nextElementSibling;
+                const dot = div.querySelector('.radio-indicator');
+                
+                if (input.checked) {
+                    div.classList.add('border-trading-accent', 'bg-sky-900/20');
+                    div.classList.remove('border-gray-600', 'bg-gray-800/50');
+                    dot.classList.add('bg-trading-accent', 'border-trading-accent');
+                    dot.classList.remove('border-gray-400');
+                } else {
+                    div.classList.remove('border-trading-accent', 'bg-sky-900/20');
+                    div.classList.add('border-gray-600', 'bg-gray-800/50');
+                    dot.classList.remove('bg-trading-accent', 'border-trading-accent');
+                    dot.classList.add('border-gray-400');
+                }
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const percent = (answeredCount / quizQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+        }
+
+        function nextPage() {
+            currentBatch++;
+            renderQuestions();
+            reapplyStyles();
+        }
+
+        function prevPage() {
+            currentBatch--;
+            renderQuestions();
+            reapplyStyles();
+        }
+
+        function reapplyStyles() {
+            const start = currentBatch * BATCH_SIZE;
+            const end = Math.min(start + BATCH_SIZE, quizQuestions.length);
+            for (let i = start; i < end; i++) {
+                if(userAnswers[i] !== null) {
+                    saveAnswer(i, userAnswers[i]);
+                }
+            }
+        }
+
+        function submitQuiz() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            if (answeredCount < quizQuestions.length) {
+                if(!confirm(`您還有 ${quizQuestions.length - answeredCount} 題未作答。確定要提交嗎？`)) {
+                    return;
+                }
+            }
+            
+            clearInterval(timerInterval);
+            calculateResults();
+        }
+
+        function calculateResults() {
+            let score = 0;
+            let reviewHtml = '';
+            
+            quizQuestions.forEach((q, idx) => {
+                const userAns = userAnswers[idx];
+                const isCorrect = userAns === q.answer;
+                if (isCorrect) score++;
+
+                const userAnsText = userAns !== null ? q.options[userAns] : '<span class="text-red-400">未作答</span>';
+                const correctAnsText = q.options[q.answer];
+                const statusColor = isCorrect ? 'border-l-4 border-trading-up bg-gray-800/30' : 'border-l-4 border-trading-down bg-gray-800/30';
+                const icon = isCorrect ? '<i class="fa-solid fa-check text-trading-up"></i>' : '<i class="fa-solid fa-xmark text-trading-down"></i>';
+
+                reviewHtml += `
+                    <div class="p-4 rounded-r-lg ${statusColor} mb-3 text-sm">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-bold text-gray-300">Q${idx+1}. ${q.question}</span>
+                            <span>${icon}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs mb-2">
+                            <div class="text-gray-400">你的答案: <span class="${isCorrect ? 'text-trading-up' : 'text-trading-down'}">${userAnsText}</span></div>
+                            <div class="text-gray-400">正確答案: <span class="text-trading-up">${correctAnsText}</span></div>
+                        </div>
+                        <div class="text-gray-400 text-xs mt-2 p-2 bg-gray-900 rounded border border-gray-700">
+                            <strong class="text-trading-accent">解析：</strong> ${q.explanation}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('results-container').classList.remove('hidden');
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('detailed-review').innerHTML = reviewHtml;
+
+            // Analysis based on score (Scale to 100%)
+            const percentage = (score / quizQuestions.length) * 100;
+            let comment = "";
+            let strength = "";
+            let weakness = "";
+
+            if (percentage >= 90) {
+                comment = "大師級！你的心理素質極強，具備頂尖交易員的潛質。";
+                strength = "你能客觀識別絕大多數的認知偏誤，情緒控管能力極佳。";
+                weakness = "請保持謙虛，市場總有新的考驗，小心「過度自信」。";
+            } else if (percentage >= 70) {
+                comment = "優秀！你已經具備相當成熟的投資心態。";
+                strength = "對於基本的人性弱點有很好的防禦機制。";
+                weakness = "在部分高壓情境或反直覺的概念上（如停損、機率思考）仍需打磨。";
+            } else if (percentage >= 50) {
+                comment = "及格邊緣。你是典型的散戶心態，容易受情緒左右。";
+                strength = "你了解部分基礎概念，但在實戰應用上可能知易行難。";
+                weakness = "容易受到「羊群效應」和「損失規避」的影響，建議多建立機械化交易規則。";
+            } else {
+                comment = "危險區域。你的決策模式高度情緒化，這在股市中非常危險。";
+                strength = "誠實面對結果是進步的開始。";
+                weakness = "幾乎所有的心理陷阱你都踩了。強烈建議在投入真金白銀前，先深入研讀投資心理學。";
+            }
+
+            document.getElementById('score-comment').innerText = comment;
+            document.getElementById('strength-text').innerText = strength;
+            document.getElementById('weakness-text').innerText = weakness;
+            
+            const scoreDisplay = document.getElementById('score-display');
+            if(percentage >= 70) scoreDisplay.className = "text-3xl font-bold text-trading-up";
+            else if(percentage >= 50) scoreDisplay.className = "text-3xl font-bold text-yellow-500";
+            else scoreDisplay.className = "text-3xl font-bold text-trading-down";
+        }
+    </script>
+</body>
+</html>
