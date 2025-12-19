@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -12,11 +12,11 @@
             theme: {
                 extend: {
                     colors: {
-                        'trading-bg': '#0f172a', // Slate 900
-                        'trading-card': '#1e293b', // Slate 800
-                        'trading-accent': '#0ea5e9', // Sky 500
-                        'trading-up': '#10b981', // Emerald 500
-                        'trading-down': '#ef4444', // Red 500
+                        'trading-bg': '#0f172a', // Slate 900 (背景)
+                        'trading-card': '#1e293b', // Slate 800 (卡片)
+                        'trading-accent': '#f59e0b', // Amber 500 (菁英金 - 用於按鈕、亮點)
+                        'trading-up': '#ef4444', // Red 500 (台股紅 - 代表正確/上漲/獲利)
+                        'trading-down': '#10b981', // Emerald 500 (台股綠 - 代表錯誤/下跌/虧損)
                         'trading-text': '#e2e8f0', // Slate 200
                         'trading-muted': '#94a3b8', // Slate 400
                     },
@@ -51,9 +51,10 @@
             background: #475569; 
         }
 
+        /* Radio Button Custom Style - Adjusted for Amber/Gold */
         .option-radio:checked + div {
-            border-color: #0ea5e9;
-            background-color: rgba(14, 165, 233, 0.1);
+            border-color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.15);
         }
 
         .fade-in {
@@ -73,7 +74,7 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-chart-line text-trading-accent text-2xl"></i>
+                    <i class="fa-solid fa-chart-line text-trading-up text-2xl"></i>
                     <span class="font-bold text-xl tracking-wide text-white">飆股菁英班 <span class="text-trading-accent">股市心理學</span></span>
                 </div>
                 <div class="flex items-center gap-4 text-sm font-medium">
@@ -114,7 +115,8 @@
                     <p class="text-sm text-gray-400">判斷你是跟風者還是逆勢交易者。</p>
                 </div>
             </div>
-            <button onclick="startQuiz()" class="bg-trading-accent hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg shadow-sky-900/50">
+            <!-- Updated Button Color to Gold/Amber -->
+            <button onclick="startQuiz()" class="bg-trading-accent hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105 shadow-lg shadow-amber-900/50">
                 開始隨機測驗 (20題)
             </button>
         </div>
@@ -139,7 +141,8 @@
                 <button id="next-btn" onclick="nextPage()" class="ml-auto bg-white text-trading-bg font-bold px-6 py-2 rounded-lg hover:bg-gray-200 transition-colors shadow-lg">
                     下一頁 <i class="fa-solid fa-arrow-right ml-2"></i>
                 </button>
-                <button id="submit-btn" onclick="submitQuiz()" class="hidden ml-auto bg-trading-up text-white font-bold px-8 py-2 rounded-lg hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-900/50">
+                <!-- Submit Button matches 'trading-up' which is now Red (Taiwan Stock Up/Positive Action) -->
+                <button id="submit-btn" onclick="submitQuiz()" class="hidden ml-auto bg-trading-up text-white font-bold px-8 py-2 rounded-lg hover:bg-red-600 transition-colors shadow-lg shadow-red-900/50">
                     提交試卷 <i class="fa-solid fa-check ml-2"></i>
                 </button>
             </div>
@@ -389,7 +392,6 @@
 
         function startQuiz() {
             // 1. Randomly select 20 questions
-            // Create a shallow copy to shuffle so we don't mess up original order if needed
             const shuffled = shuffleArray([...fullQuestionPool]);
             quizQuestions = shuffled.slice(0, QUIZ_SIZE);
             
@@ -468,12 +470,13 @@
                 const dot = div.querySelector('.radio-indicator');
                 
                 if (input.checked) {
-                    div.classList.add('border-trading-accent', 'bg-sky-900/20');
+                    // Update: Changed to Amber/Gold background for selected state
+                    div.classList.add('border-trading-accent', 'bg-amber-900/20');
                     div.classList.remove('border-gray-600', 'bg-gray-800/50');
                     dot.classList.add('bg-trading-accent', 'border-trading-accent');
                     dot.classList.remove('border-gray-400');
                 } else {
-                    div.classList.remove('border-trading-accent', 'bg-sky-900/20');
+                    div.classList.remove('border-trading-accent', 'bg-amber-900/20');
                     div.classList.add('border-gray-600', 'bg-gray-800/50');
                     dot.classList.remove('bg-trading-accent', 'border-trading-accent');
                     dot.classList.add('border-gray-400');
@@ -534,6 +537,8 @@
 
                 const userAnsText = userAns !== null ? q.options[userAns] : '<span class="text-red-400">未作答</span>';
                 const correctAnsText = q.options[q.answer];
+                // Update: Red for Correct, Green for Wrong (Taiwan Stock Market Logic)
+                // Note: 'trading-up' is now Red, 'trading-down' is now Green
                 const statusColor = isCorrect ? 'border-l-4 border-trading-up bg-gray-800/30' : 'border-l-4 border-trading-down bg-gray-800/30';
                 const icon = isCorrect ? '<i class="fa-solid fa-check text-trading-up"></i>' : '<i class="fa-solid fa-xmark text-trading-down"></i>';
 
